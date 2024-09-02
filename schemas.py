@@ -41,7 +41,9 @@ class EventFormCreate(BaseModel):
     name: str
     email: str
     phoneno: str
-    dropdown: str
+    Dropdown: str
+     Dropdown: str
+    image: Optional[bytes] = None
 
 # Schema for Event Form response
 class EventFormResponse(EventFormCreate):
