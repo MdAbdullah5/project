@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Boolean, Date, ForeignKey
+from sqlalchemy import Column, Integer, String, Boolean, Date, ForeignKey,LargeBinary
 from sqlalchemy.orm import relationship
 from database import Base
 
@@ -57,7 +57,8 @@ class EventForm(Base):
     name = Column(String, index=True)
     email = Column(String, index=True)
     phoneno = Column(String)
-    dropdown = Column(String)
+    Dropdown = Column(String)
+    image_data = Column(LargeBinary)
 
     # Define relationship with Event
     event = relationship("Event", back_populates="forms")
