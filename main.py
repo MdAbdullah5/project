@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Form, Request, Depends, HTTPException, BackgroundTasks
+from fastapi import FastAPI, Form, Request, Depends, HTTPException, BackgroundTasks,File
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
@@ -23,6 +23,7 @@ import logging
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.responses import Response
 from datetime import datetime
+from io import BytesIO
 
 app = FastAPI()
 
@@ -561,4 +562,28 @@ async def delete_event(
     db.delete(event)
     db.commit()
     return RedirectResponse(url="/events", status_code=303)
+
+@app.get("/submit_form")
+def getforms(request:Request):
+    # event_id = request.session.get('event_id')
+    # print("events",event_id)
+    return templates.TemplateResponse("forms.html",{"request": request})
+
+
+@app.post("/submit_form")
+async def postforms(request:Request,event_name=Form(...),name:str=Form(...),email:str=Form(...),phoneno:str=Form(...),Dropdown:str=Form(...),
+    file: UploadFile = File(...),db: SessionLocal = Depends(get_db)):
+    id=1
+    user=db.query(Event).filter(Event.event_name==event_name).first()
+    event_id=user.id
+    # event_id=request.session.get('event_id')
+    # print("submit_form", event_id)
+    image_data = await file.read() if file else None
+    print(type(image_data))
+    formuser=EventFormCreate(id=id,event_id=event_id,name=name,email=email,phoneno=phoneno,Dropdown=Dropdown,image=image_data)
+    user=EventForm(name=formuser.name,event_id=formuser.event_id,email=formuser.email,phoneno=formuser.phoneno,Dropdown=formuser.Dropdown, image_data=formuser.image )
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return "successful"
 
